@@ -13,7 +13,7 @@ app.use(cors({
 })); 
 
 // Proxy route for fetching data from Radio Garden API
-app.get('https://api.pomodoroom.com/api/search', async (req, res) => {
+app.get('/api/search', async (req, res) => {
   const query = req.query.q;
 
   if (!query) {
@@ -36,6 +36,12 @@ app.get('https://api.pomodoroom.com/api/search', async (req, res) => {
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).send('OK');
+});
+
+
+// Root endpoint (for testing)
+app.get("/", (req, res) => {
+  res.send("radio API is running!");
 });
 
 
