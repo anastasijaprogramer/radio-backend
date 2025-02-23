@@ -3,11 +3,11 @@ import fetch from 'node-fetch';
 import cors from 'cors';
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = 5000 || process.env.PORT ;
 
 // Enable CORS for all origins
 app.use(cors({
-  origin: 'https://www.pomodoroom.com',
+  origin: ['https://www.pomodoroom.com', 'https://api.pomodoroom.com'],
   methods: ['GET', 'POST'],
   credentials: true
 })); 
