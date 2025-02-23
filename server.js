@@ -7,8 +7,9 @@ const PORT = 5000 || process.env.PORT ;
 
 // Enable CORS for all origins
 app.use(cors({
-  origin: ['https://www.pomodoroom.com', 'https://api.pomodoroom.com'],
   methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: '*', // Change this to your frontend domain if needed
   credentials: true
 })); 
 
