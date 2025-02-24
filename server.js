@@ -7,11 +7,25 @@ const PORT = 5000 || process.env.PORT ;
 
 // Enable CORS for all origins
 app.use(cors({
-  methods: ['GET', 'POST'],
+  origin: ['https://www.pomodoroom.com', 'https://pomodoroom.com', 'http://localhost:5173'],
+  methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  origin: '*', // Change this to your frontend domain if needed
   credentials: true
 })); 
+
+// ✅ Middleware to manually set CORS headers in API responses
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "https://www.pomodoroom.com");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  next();
+});
+
+// ✅ Root endpoint to prevent 404 errors
+app.get("/", (req, res) => {
+    res.send("API is running!");
+});
 
 // Proxy route for fetching data from Radio Garden API
 app.get('/api/search', async (req, res) => {
@@ -24,14 +38,17 @@ app.get('/api/search', async (req, res) => {
   try {
     const response = await fetch(`https://radio.garden/api/search?q=${encodeURIComponent(query)}`);
     if (!response.ok) {
-      throw new Error('Failed to fetch data from Radio Garden API');
+        throw new Error('Failed to fetch data from Radio Garden API');
     }
     const data = await response.json();
+
+    // ✅ Ensure CORS headers in API response
+    res.setHeader("Access-Control-Allow-Origin", "https://www.pomodoroom.com");
     res.json(data);
-  } catch (error) {
+} catch (error) {
     console.error('Error fetching data:', error.message);
     res.status(500).json({ error: 'Failed to fetch data from Radio Garden API' });
-  }
+}
 });
 
 // Health check endpoint
@@ -39,10 +56,9 @@ app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
 
-
-// Root endpoint (for testing)
-app.get("/", (req, res) => {
-  res.send("radio API is running!");
+// ✅ Handle OPTIONS requests for preflight checks (important for CORS)
+app.options('*', (req, res) => {
+  res.sendStatus(200);
 });
 
 
